@@ -6,10 +6,14 @@ import catHouse.entities.toys.Toy;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import static catHouse.common.ConstantMessages.NOT_ENOUGH_CAPACITY_FOR_CAT;
 import static catHouse.common.ExceptionMessages.HOUSE_NAME_CANNOT_BE_NULL_OR_EMPTY;
 
-public abstract class BaseHouse implements House{
+public abstract class BaseHouse implements House {
 
     private String name;
     private int capacity;
@@ -26,32 +30,47 @@ public abstract class BaseHouse implements House{
 
     @Override
     public int sumSoftness() {
-        return 0;
+        int softSum = 0;
+        for (Toy toy : toys) {
+            softSum += toy.getSoftness();
+        }
+        return softSum;
     }
 
     @Override
     public void addCat(Cat cat) {
-
+        if (cats.size() < capacity) {
+            cats.add(cat);
+        } else {
+            throw new IllegalArgumentException(NOT_ENOUGH_CAPACITY_FOR_CAT);
+        }
     }
 
     @Override
     public void removeCat(Cat cat) {
-
+        cats.remove(cat);
     }
 
     @Override
     public void buyToy(Toy toy) {
-
+        toys.add(toy);
     }
 
     @Override
     public void feeding() {
-
+        for (Cat cat : cats) {
+            cat.eating();
+        }
     }
 
     @Override
     public String getStatistics() {
-        return null;
+        StringBuilder sb = new StringBuilder();
+
+
+        sb.append("Toys: %d Softness: %d",toys.size(), sumSoftness()).append(System.lineSeparator());
+
+        return sb.toString().trim();
     }
 
     @Override
@@ -69,11 +88,11 @@ public abstract class BaseHouse implements House{
 
     @Override
     public Collection<Cat> getCats() {
-        return null;
+        return Collections.unmodifiableCollection(cats);
     }
 
     @Override
     public Collection<Toy> getToys() {
-        return null;
+        return Collections.unmodifiableCollection(toys);
     }
 }
