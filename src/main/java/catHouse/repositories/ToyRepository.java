@@ -13,18 +13,30 @@ public class ToyRepository implements Repository{
         this.toys = new ArrayList<>();
     }
 
+    public ToyRepository() {
+        this.toys = new ArrayList<>();
+    }
+
     @Override
     public void buyToy(Toy toy) {
-
+        toys.add(toy);
     }
 
     @Override
     public boolean removeToy(Toy toy) {
-        return false;
+        toys.remove(toy);
+        return true;
     }
 
     @Override
     public Toy findFirst(String type) {
-        return null;
+        Toy myToy = null;
+        for (Toy toy : toys) {
+            if (toy.getClass().getSimpleName().equals(type)){
+                myToy = toys.stream().findFirst().orElse(null);
+            }
+        }
+         return myToy;
+        
     }
 }
