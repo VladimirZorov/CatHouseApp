@@ -1,6 +1,8 @@
 package catHouse.core;
 
-import catHouse.common.ConstantMessages;
+import catHouse.entities.cat.Cat;
+import catHouse.entities.cat.LonghairCat;
+import catHouse.entities.cat.ShorthairCat;
 import catHouse.entities.houses.House;
 import catHouse.entities.houses.LongHouse;
 import catHouse.entities.houses.ShortHouse;
@@ -11,10 +13,10 @@ import catHouse.repositories.ToyRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Stream;
 
 import static catHouse.common.ConstantMessages.*;
-import static catHouse.common.ExceptionMessages.INVALID_HOUSE_TYPE;
-import static catHouse.common.ExceptionMessages.INVALID_TOY_TYPE;
+import static catHouse.common.ExceptionMessages.*;
 
 public class ControllerImpl implements Controller {
 
@@ -56,13 +58,40 @@ public class ControllerImpl implements Controller {
 
     @Override
     public String toyForHouse(String houseName, String toyType) {
-
+        for (House house : houses) {
+            if (house.getName().equals(houseName)) {
+                Toy toy = toys.findFirst(toyType);
+                toys.buyToy(toy);
+            }
+        }
         return null;
     }
 
     @Override
     public String addCat(String houseName, String catType, String catName, String catBreed, double price) {
-        return null;
+        for (House house : houses) {
+            if (house.getName().equals(houseName)) {
+                Cat cat;
+                if (catType.equals("ShorthairCat")) {
+                    cat = new ShorthairCat(catName, catBreed, price);
+                    if (house.getName().equals("HouseForPersian")) {
+                        house.addCat(cat);
+                    } else {
+                        throw new IllegalArgumentException(UNSUITABLE_HOUSE);
+                    }
+                } else if (catType.equals("LonghairCat")) {
+                    cat = new LonghairCat(catName, catBreed, price);
+                    if (house.getName().equals("HouseForSphynx")) {
+                        house.addCat(cat);
+                    } else {
+                        throw new IllegalArgumentException(UNSUITABLE_HOUSE);
+                    }
+                } else {
+                    throw new IllegalArgumentException(INVALID_CAT_TYPE);
+                }
+            }
+        }
+        return String.format(SUCCESSFULLY_ADDED_CAT_IN_HOUSE, catType, houseName);
     }
 
     @Override
@@ -71,7 +100,7 @@ public class ControllerImpl implements Controller {
         for (House house : houses) {
             if (house.getName().equals(houseName)) {
                 house.feeding();
-                fedCount++;
+                fedCount = house.getCats().size();
             }
         }
         return String.format(FEEDING_CAT, fedCount);
