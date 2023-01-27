@@ -13,7 +13,6 @@ import catHouse.repositories.ToyRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Stream;
 
 import static catHouse.common.ConstantMessages.*;
 import static catHouse.common.ExceptionMessages.*;
@@ -61,10 +60,16 @@ public class ControllerImpl implements Controller {
         for (House house : houses) {
             if (house.getName().equals(houseName)) {
                 Toy toy = toys.findFirst(toyType);
-                toys.buyToy(toy);
+                if (toy.getClass().getSimpleName().equals(toyType)) {
+                    house.buyToy(toy);
+                    toys.removeToy(toy);
+                    return String.format(SUCCESSFULLY_ADDED_TOY_IN_HOUSE, toyType, houseName);
+                } else {
+                    throw new IllegalArgumentException(String.format(NO_TOY_FOUND, toyType));
+                }
             }
         }
-        return null;
+        return String.format(NO_TOY_FOUND, toyType);
     }
 
     @Override
@@ -108,12 +113,15 @@ public class ControllerImpl implements Controller {
 
     @Override
     public String sumOfAll(String houseName) {
-        ToyRepository mytoys = new ToyRepository();
         double value = 0.00;
         for (House house : houses) {
             if (house.getName().equals(houseName)) {
-                value += house.getCats().size();
-                house.getToys().forEach(toy -> toy.getPrice());
+                for (Cat cat : house.getCats()){
+                    value += cat.getPrice();
+                }
+                for (Toy toy : house.getToys()) {
+                    value += toy.getPrice();
+                }
             }
         }
         return String.format(VALUE_HOUSE, houseName, value);
@@ -121,6 +129,11 @@ public class ControllerImpl implements Controller {
 
     @Override
     public String getStatistics() {
-        return null;
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(houses.getClass().getSimpleName()).append(System.lineSeparator());
+
+
+        return sb.toString().trim();
     }
 }
