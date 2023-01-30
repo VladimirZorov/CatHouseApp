@@ -131,9 +131,9 @@ public class ControllerImpl implements Controller {
     public String getStatistics() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(houses.getClass().getSimpleName()).append(System.lineSeparator());
-
-
+        for (House house : houses) {
+           sb.append(house.getStatistics()).append(System.lineSeparator());
+        }
         return sb.toString().trim();
     }
 }

@@ -66,8 +66,8 @@ public abstract class BaseHouse implements House {
     @Override
     public String getStatistics() {
         StringBuilder sb = new StringBuilder();
-
-
+        sb.append("%s %s", name, name).append(System.lineSeparator());
+        sb.append(cats.toString());
         sb.append("Toys: %d Softness: %d",toys.size(), sumSoftness()).append(System.lineSeparator());
 
         return sb.toString().trim();
